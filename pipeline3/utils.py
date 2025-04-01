@@ -62,3 +62,10 @@ def draw_matches_ransac(img1, kp1, img2, kp2, matches):
 
     return canvas
 
+def create_combined_for_plotting(warped0, mask_warped0, canvas1, mask_canvas1, warped2, mask_warped2):
+    """ Combina las imágenes y máscaras para visualizar el mix de 'opacidades'"""
+    masked0 = (warped0.astype(np.float32) * np.dstack([mask_warped0]*3)).astype(np.uint8)
+    masked1 = (canvas1.astype(np.float32) * np.dstack([mask_canvas1]*3)).astype(np.uint8)
+    masked2 = (warped2.astype(np.float32) * np.dstack([mask_warped2]*3)).astype(np.uint8)
+    combined = cv2.addWeighted(cv2.addWeighted(masked0, 0.7, masked1, 0.7, 0), 0.7, masked2, 0.7, 0)
+    return combined
