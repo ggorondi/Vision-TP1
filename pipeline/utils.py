@@ -29,20 +29,20 @@ def visualize_transformed_points(img_target, pts_anchor, pts_target, H, title="T
 
 def draw_matches_ransac(img1, kp1, img2, kp2, matches):
     """
-    Dibuja líneas entre puntos coincidentes de dos imágenes.
+    Dibuja líneas entre puntos coincidentes usando objetos cv2.DMatch.
     - img1, img2: imágenes originales (BGR o RGB o grayscale)
     - kp1, kp2: listas de keypoints de OpenCV
     - matches: lista de tuplas (idx1, idx2)
 
     Retorna una imagen RGB combinada con los matches dibujados.
     """
-    # Convertir imágenes a color si están en escala de grises
+    # Asegurar que sean imágenes en color
     if len(img1.shape) == 2:
         img1 = cv2.cvtColor(img1, cv2.COLOR_GRAY2BGR)
     if len(img2.shape) == 2:
         img2 = cv2.cvtColor(img2, cv2.COLOR_GRAY2BGR)
 
-    # Combinar imágenes horizontalmente
+    # Crear canvas para mostrar ambas imágenes
     h1, w1 = img1.shape[:2]
     h2, w2 = img2.shape[:2]
     canvas = np.zeros((max(h1, h2), w1 + w2, 3), dtype=np.uint8)
@@ -50,13 +50,21 @@ def draw_matches_ransac(img1, kp1, img2, kp2, matches):
     canvas[:h2, w1:] = img2
 
     # Dibujar matches
-    for idx1, idx2 in matches:
-        pt1 = tuple(np.round(kp1[idx1].pt).astype(int))
-        pt2 = tuple(np.round(kp2[idx2].pt).astype(int) + np.array([w1, 0]))
+    for m in matches:
+        pt1 = tuple(np.round(kp1[m.queryIdx].pt).astype(int))
+        pt2 = tuple(np.round(kp2[m.trainIdx].pt).astype(int) + np.array([w1, 0]))
+
         color = tuple(np.random.randint(0, 255, 3).tolist())
         cv2.line(canvas, pt1, pt2, color, 1)
         cv2.circle(canvas, pt1, 4, color, -1)
         cv2.circle(canvas, pt2, 4, color, -1)
 
-    return cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB)
+    return canvas
 
+def create_combined_for_plotting(warped0, mask_warped0, canvas1, mask_canvas1, warped2, mask_warped2):
+    """ Combina las imágenes y máscaras para visualizar el mix de 'opacidades'"""
+    masked0 = (warped0.astype(np.float32) * np.dstack([mask_warped0]*3)).astype(np.uint8)
+    masked1 = (canvas1.astype(np.float32) * np.dstack([mask_canvas1]*3)).astype(np.uint8)
+    masked2 = (warped2.astype(np.float32) * np.dstack([mask_warped2]*3)).astype(np.uint8)
+    combined = cv2.addWeighted(cv2.addWeighted(masked0, 0.7, masked1, 0.7, 0), 0.7, masked2, 0.7, 0)
+    return combined

@@ -12,13 +12,14 @@ def resize(img, w):
     return cv2.resize(img, (w, h))
 
 
-def load_images_from_folder(folder_path, target_width=600):
+def load_images_from_folder(folder_path, target_width=None):
     """
     Carga todas las imágenes .jpg o .png de un folder, las redimensiona a un ancho fijo
     y las convierte a escala de grises.
     """
     images_color = []
     images_gray = []
+    resize_factors = []
 
     for filename in sorted(os.listdir(folder_path)):
         if filename.endswith(".jpg") or filename.endswith(".png"):
@@ -29,13 +30,21 @@ def load_images_from_folder(folder_path, target_width=600):
                 continue
 
             # Resize a ancho deseado
-            img = resize(img, target_width)
+            if target_width is not None:
+                # Calcula el factor de redimensionamiento
+                h, w = img.shape[:2]
+                resize_factor = target_width / w
+                resize_factors.append(resize_factor)
+                img = resize(img, target_width)
+            else:
+                resize_factors.append(1.0)
 
             # Escala de grises
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
             images_color.append(img)
             images_gray.append(gray)
+            
 
-    return images_color, images_gray
+    return images_color, images_gray, resize_factors
 
