@@ -12,7 +12,7 @@ def ransac_homography(pts_src, pts_dst, num_iters=1000, threshold=5.0):
     
     Devuelve:
     - mejor_H: homografía con más inliers
-    - inlier_mask: array booleano de tamaño N con True para inliers
+    - inlier_mask: array booleano de tamaño N con True para los inliers en pts_src y pts_dst
     """
     assert pts_src.shape == pts_dst.shape
     N = pts_src.shape[0]
@@ -26,7 +26,7 @@ def ransac_homography(pts_src, pts_dst, num_iters=1000, threshold=5.0):
         src_sample = pts_src[idx]
         dst_sample = pts_dst[idx]
 
-        # Calcular H con DLT
+        # Calcular H con nuestro DLT
         H = compute_homography_dlt(src_sample, dst_sample)
 
         # Transformar todos los puntos

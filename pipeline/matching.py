@@ -8,16 +8,17 @@ def match_descriptors(desc1, desc2, method="cross_check", ratio_thresh=0.75):
     Empareja descriptores entre dos imágenes con distintos métodos:
     - 'cross_check': validación cruzada
     - 'lowe': ratio test de David Lowe
-    - 'both': ambos métodos
+    - 'both': ambos métodos en conjunto
     """
-    bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=(method == "cross_check"))
 
     if method == "cross_check":
+        bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
         matches = bf.match(desc1, desc2)
         matches = sorted(matches, key=lambda x: x.distance)
         return matches
 
     elif method == "lowe":
+        bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
         matches = bf.knnMatch(desc1, desc2, k=2)
         good_matches = []
         for m, n in matches:
@@ -26,7 +27,7 @@ def match_descriptors(desc1, desc2, method="cross_check", ratio_thresh=0.75):
         return good_matches
     
     elif method == "cross_check_and_lowe":
-        bf = cv2.BFMatcher(cv2.NORM_L2)
+        bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
         matchesAtoB = bf.knnMatch(desc1, desc2, k=2)
         goodAtoB = []
         for m, n in matchesAtoB:
@@ -48,6 +49,9 @@ def match_descriptors(desc1, desc2, method="cross_check", ratio_thresh=0.75):
 
 
 def draw_matches(img1, kp1, img2, kp2, matches, title="Matches"):
+    """
+    imshow con los matches entre dos imágenes.
+    """
     matched_img = cv2.drawMatches(
         img1, kp1, img2, kp2,
         matches, None,

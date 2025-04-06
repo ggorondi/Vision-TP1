@@ -38,19 +38,19 @@ def compute_homography_dlt(pts_src, pts_dst):
 
 def show_manual_matches_and_compute_H(matches, resize_factors, images, title_prefix="Manual"):
     """
-    Muestra los puntos de correspondencia seleccionados manualmente
+    Muestra los puntos de correspondencia seleccionados manualmente sobre la imagen
     y calcula la homografía entre dos imágenes usando DLT.
     
     Parámetros:
-    - matches: diccionario con las correspondencias seleccionadas manualmente
-    - resize_factors: factores de redimensionamiento para cada imagen
+    - matches: diccionario con las correspondencias seleccionadas manualmente (en escala original)
+    - resize_factors: factores de redimensionamiento para cada imagen (porque los matches estan en escala original, pero images pueden estar redimensionadas)
     
     Devuelve:
-    - H: matriz de homografía entre las imágenes seleccionadas
+    - H: matriz de homografía entre las imágenes seleccionadas (versiones redimensionadas)
     """
     keys = list(matches.keys())
-    idx0 = int(keys[0][-1])  # e.g., 'image0' -> 0
-    idx1 = int(keys[1][-1])
+    idx0 = int(keys[0][-1]) # de img0 o img2
+    idx1 = int(keys[1][-1]) # de img1
 
     pts0 = np.array(matches[keys[0]]) * resize_factors[idx0]
     pts1 = np.array(matches[keys[1]]) * resize_factors[idx1]

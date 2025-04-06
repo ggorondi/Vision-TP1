@@ -12,9 +12,9 @@ def detect_features(gray_image):
 
 def anms(keypoints, descriptors, N=200, window_size=10):
     """
-    Supresión No Máxima Adaptativa (ANMS) según el pseudocódigo del enunciado.
-    - Primero detecta los máximos locales en una vecindad.
-    - Luego calcula Ri: la mínima distancia al punto más cercano con mayor respuesta.
+    Supresión No Máxima Adaptativa (ANMS)
+    - Primero selecciona todos los máximos locales (según una pequeña vecindad de radio window_size) y descarta el resto de los keypoints.
+    - Luego calcula sus Ri: la mínima distancia al punto más cercano con mayor respuesta.
     - Finalmente selecciona los N puntos con mayor Ri (mejor distribuidos).
     """
     # Paso 1: convertir keypoints a array con (x, y, respuesta)

@@ -16,6 +16,7 @@ def load_images_from_folder(folder_path, target_width=None):
     """
     Carga todas las imágenes .jpg o .png de un folder, las redimensiona a un ancho fijo
     y las convierte a escala de grises.
+    Devuelve: lista de imágenes en color, lista de imágenes en escala de grises, lista de factores de redimensionamiento.
     """
     images_color = []
     images_gray = []
@@ -31,7 +32,6 @@ def load_images_from_folder(folder_path, target_width=None):
 
             # Resize a ancho deseado
             if target_width is not None:
-                # Calcula el factor de redimensionamiento
                 h, w = img.shape[:2]
                 resize_factor = target_width / w
                 resize_factors.append(resize_factor)
